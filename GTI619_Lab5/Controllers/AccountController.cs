@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using GTI619_Lab5.Models;
+using GTI619_Lab5.DAL;
 
 namespace GTI619_Lab5.Controllers
 {
@@ -23,9 +24,11 @@ namespace GTI619_Lab5.Controllers
         public AccountController(UserManager<ApplicationUser> userManager)
         {
             UserManager = userManager;
+            _context = new ApplicationContext();
         }
 
         public UserManager<ApplicationUser> UserManager { get; private set; }
+        private ApplicationContext _context;
 
         //
         // GET: /Account/Login
@@ -43,6 +46,7 @@ namespace GTI619_Lab5.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
+            var test = _context.AuthentificationConfigs.First().TimeOut;
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindAsync(model.UserName, model.Password);
