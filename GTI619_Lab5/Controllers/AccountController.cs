@@ -46,7 +46,7 @@ namespace GTI619_Lab5.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            var test = _context.AuthentificationConfigs.First().TimeOut;
+            //var test = _context.AuthentificationConfigs.First().TimeOut;
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindAsync(model.UserName, model.Password);

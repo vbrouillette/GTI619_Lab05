@@ -25,7 +25,7 @@ namespace GTI619_Lab5
         protected void Session_OnStart(object sender, EventArgs e)
         {
             // Code that runs when a new session is started
-            HttpContext.Current.Session.Timeout = _context.AuthentificationConfigs.First().TimeOut;
+            //HttpContext.Current.Session.Timeout = _context.AuthentificationConfigs.First().TimeOutSession;
         }
     }
 }
