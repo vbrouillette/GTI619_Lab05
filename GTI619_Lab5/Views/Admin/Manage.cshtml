@@ -7,9 +7,32 @@
 <div class="row">
     @using (Html.BeginForm("UpdateConfig", "Admin", FormMethod.Post))
     {
-        @Html.LabelFor(m => m.NbrTry)
-        @Html.TextBoxFor(m => m.NbrTry)
-        
-        <input type="submit" value="Soumettre"/>
+        <div style="position:relative">
+            <div style="float:left">
+                <div>
+                    @Html.LabelFor(m => m.NbrTry)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.IsBlockAfterTwoTries)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.TryDownPeriod)
+                </div>
+            </div>
+
+            <div style="float:left">
+                <div>
+                    @Html.TextBoxFor(m => m.NbrTry)
+                </div>
+                <div>
+                    @Html.CheckBoxFor(m => m.IsBlockAfterTwoTries)
+                </div>
+                <div>
+                    @Html.TextBoxFor(m => m.TryDownPeriod)
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="Soumettre" />
+
     }
 </div>

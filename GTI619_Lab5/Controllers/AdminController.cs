@@ -24,7 +24,7 @@ namespace GTI619_Lab5.Controllers
         }
 
         [HttpPost]
-        public void UpdateConfig(UpdateConfigModel model)
+        public ActionResult UpdateConfig(UpdateConfigModel model)
         {
             var config = _context.AuthentificationConfigs.First();
             config.TimeOutSession = model.TimeOutSession;
@@ -42,6 +42,8 @@ namespace GTI619_Lab5.Controllers
 
             _context.Entry(config).State = System.Data.Entity.EntityState.Modified;
             _context.SaveChanges();
+
+            return RedirectToAction("Manage");
         }
     }
 }
