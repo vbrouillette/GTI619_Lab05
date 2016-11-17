@@ -5,9 +5,11 @@
 
 <h2>Manage</h2>
 <div class="row">
-    @using (Html.BeginForm("UpdateConfig", "Admin", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+    @using (Html.BeginForm("UpdateConfig", "Admin", FormMethod.Post))
     {
         @Html.LabelFor(m => m.NbrTry)
         @Html.TextBoxFor(m => m.NbrTry)
+        
+        <input type="submit" value="Soumettre"/>
     }
 </div>
