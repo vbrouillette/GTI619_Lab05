@@ -18,13 +18,22 @@ namespace GTI619_Lab5.Controllers
             _context = new ApplicationContext();
         }
 
-        //
-        // GET: /Admin/
+        [HttpPost]
         public void UpdateConfig(UpdateConfigModel model)
         {
             var config = _context.AuthentificationConfigs.First();
-            config.TimeOutSession = model.TimeOutSession;
-
+            config.SetTimeOutSession(model.TimeOutSession);
+            config.IsBlockAfterTwoTries = model.IsBlockAfterTwoTries;
+            config.IsLowerCase = model.IsLowerCase;
+            config.IsNumber = model.IsNumber;
+            config.IsPeriodic = model.IsPeriodic;
+            config.IsSpecialCase = model.IsSpecialCase;
+            config.IsUpperCase = model.IsUpperCase;
+            config.SetMaxLenght(model.MaxLenght);
+            config.SetMinLenght(model.MinLenght);
+            config.SetNbrTry(model.NbrTry);
+            config.SetPeriodPeriodic(model.PeriodPeriodic);
+            config.SetTryDownPeriod(model.TryDownPeriod);          
             _context.SaveChanges();
         }
 	}

@@ -1,0 +1,13 @@
+﻿@model GTI619_Lab5.Models.UpdateConfigModel
+@{
+    ViewBag.Title = "Manage";
+}
+
+<h2>Manage</h2>
+<div class="row">
+    @using (Html.BeginForm("UpdateConfig", "Admin", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+    {
+        @Html.LabelFor(m => m.NbrTry)
+        @Html.TextBoxFor(m => m.NbrTry)
+    }
+</div>
