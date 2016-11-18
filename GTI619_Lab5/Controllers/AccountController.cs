@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
@@ -10,6 +7,8 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using GTI619_Lab5.Models;
 using GTI619_Lab5.DAL;
+using System.Linq;
+using System;
 
 namespace GTI619_Lab5.Controllers
 {
@@ -46,18 +45,87 @@ namespace GTI619_Lab5.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            //var test = _context.AuthentificationConfigs.First().TimeOut;
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindAsync(model.UserName, model.Password);
-                if (user != null)
-                {
-                    await SignInAsync(user, model.RememberMe);
-                    return RedirectToLocal(returnUrl);
-                }
-                else
+                var userByUsername = await UserManager.FindByNameAsync(model.UserName);
+                var loginConfig = _context.LoginConfigs.First();
+
+                if (userByUsername == null)
                 {
                     ModelState.AddModelError("", "Invalid username or password.");
+                }
+                else
+                { 
+                    var failedAttemptsSinceLastSuccess = 10; // TODO : retrieve from Database
+                    var timeOfLastfailedAttempts = DateTime.Now.Subtract(TimeSpan.FromMinutes(5.5)); // TODO : retrieve from Database
+
+                    if (failedAttemptsSinceLastSuccess % loginConfig.NbAttemptsBeforeBlocking == 0) // user is blocked
+                    {
+                        var nbTimesUserHasBeenBlocked = (int)(failedAttemptsSinceLastSuccess / loginConfig.NbAttemptsBeforeBlocking) - 1;
+
+                        if (nbTimesUserHasBeenBlocked >= loginConfig.MaxBlocksBeforeAdmin)
+                        {
+                            ModelState.AddModelError("", "You have been permanently blocked. Contact Admin");
+                            return View(model);
+                        }
+
+                        var currentBlockingDelay = TimeSpan.FromMinutes(
+                            Int32.Parse(loginConfig.DelayBetweenBlocks.Split(',')[nbTimesUserHasBeenBlocked]));
+
+                        var timeSinceLastfailedAttempts = DateTime.Now.Subtract(timeOfLastfailedAttempts);
+
+                        if (currentBlockingDelay > timeSinceLastfailedAttempts) // verify block is finished
+                        {
+                            ModelState.AddModelError("", "You have been blocked. Wait " 
+                                + currentBlockingDelay.Subtract(timeSinceLastfailedAttempts).TotalMinutes 
+                                + " minutes." );
+                            return View(model);
+                        }
+                    }
+
+
+                    var user = await UserManager.FindAsync(model.UserName, model.Password);
+
+                    if (user != null)
+                    {
+                        await SignInAsync(user, model.RememberMe);
+
+                        // TODO : Log attempt, success
+
+                        return RedirectToLocal(returnUrl);
+                    }
+                    else
+                    {
+
+                        if (userByUsername != null)
+                        {
+                            // TODO : Log attempt, failed
+
+                            failedAttemptsSinceLastSuccess++; // TODO : retrieve from Database
+
+                            if (failedAttemptsSinceLastSuccess >= loginConfig.NbAttemptsBeforeBlocking)
+                            {
+                                var nbTimesUserHasBeenBlocked = (int)(failedAttemptsSinceLastSuccess / loginConfig.NbAttemptsBeforeBlocking) - 1;
+                                var currentBlockingDelay = TimeSpan.FromMinutes(
+                                    Int32.Parse(loginConfig.DelayBetweenBlocks.Split(',')[nbTimesUserHasBeenBlocked]));
+
+                                var timeSinceLastfailedAttempts = DateTime.Now.Subtract(timeOfLastfailedAttempts);
+
+                                if (currentBlockingDelay > timeSinceLastfailedAttempts) // verify block is finished
+                                {
+                                    ModelState.AddModelError("", "You have been blocked. Wait "
+                                        + currentBlockingDelay.Subtract(timeSinceLastfailedAttempts).TotalMinutes
+                                        + " minutes.");
+                                    return View(model);
+                                }
+                            }
+                        }
+
+                        Thread.Sleep(loginConfig.DelayBetweenFailedAuthentication);
+
+                        ModelState.AddModelError("", "Invalid username or password.");
+                    }
+
                 }
             }
 

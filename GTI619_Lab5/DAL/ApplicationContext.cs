@@ -17,10 +17,16 @@ namespace GTI619_Lab5.DAL
 
         public DbSet<AuthentificationConfig> AuthentificationConfigs { get; set; }
 
+        public DbSet<LoginConfig> LoginConfigs { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AuthentificationConfig>()
             .ToTable("AuthentificationConfig")
+            .HasKey(s => s.Id);
+
+            modelBuilder.Entity<LoginConfig>()
+            .ToTable("LoginConfig")
             .HasKey(s => s.Id);
         }
     }
