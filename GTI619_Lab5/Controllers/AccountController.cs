@@ -23,11 +23,13 @@ namespace GTI619_Lab5.Controllers
         public AccountController(UserManager<ApplicationUser> userManager)
         {
             UserManager = userManager;
+            _roleContext = new ApplicationDbContext();
             _context = new ApplicationContext();
         }
 
         public UserManager<ApplicationUser> UserManager { get; private set; }
         private ApplicationContext _context;
+        private ApplicationDbContext _roleContext;
 
         //
         // GET: /Account/Login
@@ -55,11 +57,11 @@ namespace GTI619_Lab5.Controllers
                     ModelState.AddModelError("", "Invalid username or password.");
                 }
                 else
-                { 
-                    var failedAttemptsSinceLastSuccess = 10; // TODO : retrieve from Database
+                {
+                    var failedAttemptsSinceLastSuccess = 0; // TODO : retrieve from Database
                     var timeOfLastfailedAttempts = DateTime.Now.Subtract(TimeSpan.FromMinutes(5.5)); // TODO : retrieve from Database
 
-                    if (failedAttemptsSinceLastSuccess % loginConfig.NbAttemptsBeforeBlocking == 0) // user is blocked
+                    if (false)//(failedAttemptsSinceLastSuccess % loginConfig.NbAttemptsBeforeBlocking == 0) // user is blocked
                     {
                         var nbTimesUserHasBeenBlocked = (int)(failedAttemptsSinceLastSuccess / loginConfig.NbAttemptsBeforeBlocking) - 1;
 
@@ -76,9 +78,9 @@ namespace GTI619_Lab5.Controllers
 
                         if (currentBlockingDelay > timeSinceLastfailedAttempts) // verify block is finished
                         {
-                            ModelState.AddModelError("", "You have been blocked. Wait " 
-                                + currentBlockingDelay.Subtract(timeSinceLastfailedAttempts).TotalMinutes 
-                                + " minutes." );
+                            ModelState.AddModelError("", "You have been blocked. Wait "
+                                + currentBlockingDelay.Subtract(timeSinceLastfailedAttempts).TotalMinutes
+                                + " minutes.");
                             return View(model);
                         }
                     }
@@ -138,7 +140,15 @@ namespace GTI619_Lab5.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            return View();
+            var registerViewModel = new RegisterViewModel();
+            registerViewModel.Roles = _roleContext.Roles.Where(w => w.Name != "Administrateur")
+                                                        .Select(s => new RoleModel()
+                                                        {
+                                                            Value = s.Id,
+                                                            Text = s.Name
+                                                        })
+                                                        .ToList();
+            return View(registerViewModel);
         }
 
         //
@@ -151,9 +161,12 @@ namespace GTI619_Lab5.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser() { UserName = model.UserName };
+                var role = _roleContext.Roles.Where(w=>w.Id == model.Role).FirstOrDefault();
+                if(role==null || role.Name=="Administrateur"){throw new Exception();}
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    UserManager.AddToRole(user.Id, role.Name);
                     await SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
@@ -450,7 +463,8 @@ namespace GTI619_Lab5.Controllers
 
         private class ChallengeResult : HttpUnauthorizedResult
         {
-            public ChallengeResult(string provider, string redirectUri) : this(provider, redirectUri, null)
+            public ChallengeResult(string provider, string redirectUri)
+                : this(provider, redirectUri, null)
             {
             }
 

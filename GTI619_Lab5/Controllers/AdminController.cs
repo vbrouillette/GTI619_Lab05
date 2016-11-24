@@ -18,17 +18,39 @@ namespace GTI619_Lab5.Controllers
             _context = new ApplicationContext();
         }
 
+        [Authorize(Roles = "Administrateur")]
         public ActionResult Manage()
         {
-            return View();
+            var config = _context.AuthentificationConfigs.First();
+            var loginConfig = _context.LoginConfigs.First();
+
+            var updateConfigModel = new UpdateConfigModel()
+            {
+                TimeOutSession = config.TimeOutSession,
+                IsLowerCase = config.IsLowerCase,
+                IsNumber = config.IsNumber,
+                IsPeriodic = config.IsPeriodic,
+                IsSpecialCase = config.IsSpecialCase,
+                IsUpperCase = config.IsUpperCase,
+                MaxLenght = config.MaxLenght,
+                MinLenght = config.MinLenght,
+                PeriodPeriodic = config.PeriodPeriodic,
+                NbrLastPasswords = config.NbrLastPasswords,
+                DelayBetweenBlocks = loginConfig.DelayBetweenBlocks,
+                DelayBetweenFailedAuthentication = loginConfig.DelayBetweenFailedAuthentication,
+                MaxBlocksBeforeAdmin = loginConfig.MaxBlocksBeforeAdmin,
+                NbAttemptsBeforeBlocking=loginConfig.NbAttemptsBeforeBlocking
+            };
+            return View(updateConfigModel);
+
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrateur")]
         public ActionResult UpdateConfig(UpdateConfigModel model)
         {
             var config = _context.AuthentificationConfigs.First();
             config.TimeOutSession = model.TimeOutSession;
-            config.IsBlockAfterTwoTries = model.IsBlockAfterTwoTries;
             config.IsLowerCase = model.IsLowerCase;
             config.IsNumber = model.IsNumber;
             config.IsPeriodic = model.IsPeriodic;
@@ -36,12 +58,18 @@ namespace GTI619_Lab5.Controllers
             config.IsUpperCase = model.IsUpperCase;
             config.MaxLenght = model.MaxLenght;
             config.MinLenght = model.MinLenght;
-            config.NbrTry = model.NbrTry;
             config.PeriodPeriodic = model.PeriodPeriodic;
-            config.TryDownPeriod = model.TryDownPeriod;
+            config.NbrLastPasswords = model.NbrLastPasswords;
+
+            var loginConfig = _context.LoginConfigs.First();
+            loginConfig.DelayBetweenBlocks = model.DelayBetweenBlocks;
+            loginConfig.DelayBetweenFailedAuthentication = model.DelayBetweenFailedAuthentication;
+            loginConfig.MaxBlocksBeforeAdmin = model.MaxBlocksBeforeAdmin;
+            loginConfig.NbAttemptsBeforeBlocking = model.NbAttemptsBeforeBlocking;
 
             _context.Entry(config).State = System.Data.Entity.EntityState.Modified;
-            _context.SaveChanges();
+            _context.Entry(loginConfig).State = System.Data.Entity.EntityState.Modified;
+            _context.SaveChanges();         
 
             return RedirectToAction("Manage");
         }

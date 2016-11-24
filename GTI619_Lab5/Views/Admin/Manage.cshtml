@@ -10,29 +10,95 @@
         <div style="position:relative">
             <div style="float:left">
                 <div>
-                    @Html.LabelFor(m => m.NbrTry)
+                    @Html.LabelFor(m => m.DelayBetweenBlocks)
                 </div>
                 <div>
-                    @Html.LabelFor(m => m.IsBlockAfterTwoTries)
+                    @Html.LabelFor(m => m.DelayBetweenFailedAuthentication)
                 </div>
                 <div>
-                    @Html.LabelFor(m => m.TryDownPeriod)
+                    @Html.LabelFor(m => m.NbAttemptsBeforeBlocking)
                 </div>
+                <div>
+                    @Html.LabelFor(m => m.MaxBlocksBeforeAdmin)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.NbrLastPasswords)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.IsPeriodic)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.PeriodPeriodic)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.MaxLenght)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.MinLenght)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.IsUpperCase)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.IsLowerCase)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.IsSpecialCase)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.IsNumber)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.TimeOutSession)
+                </div>
+                <input type="submit" value="Soumettre" />
             </div>
 
             <div style="float:left">
                 <div>
-                    @Html.TextBoxFor(m => m.NbrTry)
+                    @Html.TextBoxFor(m => m.DelayBetweenBlocks, new { @pattern = "(\\d,?)+" , @placeholder="5,10,15"})
                 </div>
                 <div>
-                    @Html.CheckBoxFor(m => m.IsBlockAfterTwoTries)
+                    @Html.TextBoxFor(m => m.DelayBetweenFailedAuthentication, new { @type = "number" })
                 </div>
                 <div>
-                    @Html.TextBoxFor(m => m.TryDownPeriod)
+                    @Html.TextBoxFor(m => m.NbAttemptsBeforeBlocking, new { @type = "number" })
+                </div>
+                <div>
+                    @Html.TextBoxFor(m => m.MaxBlocksBeforeAdmin, new { @type = "number" })
+                </div>
+                <div>
+                    @Html.TextBoxFor(m => m.NbrLastPasswords, new { @type = "number" })
+                </div>
+                <div>
+                    @Html.CheckBoxFor(m => m.IsPeriodic)
+                </div>
+                <div>
+                    @Html.TextBoxFor(m => m.PeriodPeriodic, new { @type = "number" })
+                </div>
+                <div>
+                    @Html.TextBoxFor(m => m.MaxLenght, new { @type = "number" })
+                </div>
+                <div>
+                    @Html.TextBoxFor(m => m.MinLenght, new { @type = "number" })
+                </div>
+                <div>
+                    @Html.CheckBoxFor(m => m.IsUpperCase)
+                </div>
+                <div>
+                    @Html.CheckBoxFor(m => m.IsLowerCase)
+                </div>
+                <div>
+                    @Html.CheckBoxFor(m => m.IsSpecialCase)
+                </div>
+                <div>
+                    @Html.CheckBoxFor(m => m.IsNumber)
+                </div>
+                <div>
+                    @Html.TextBoxFor(m => m.TimeOutSession, new { @type = "number" })
                 </div>
             </div>
         </div>
-        <input type="submit" value="Soumettre" />
 
     }
 </div>

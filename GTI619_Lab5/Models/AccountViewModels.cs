@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GTI619_Lab5.Models
 {
@@ -59,5 +61,10 @@ namespace GTI619_Lab5.Models
         [Display(Name = "Confirmer le mot de passe ")]
         [Compare("Password", ErrorMessage = "Le mot de passe et le mot de passe de confirmation ne correspondent pas.")]
         public string ConfirmPassword { get; set; }
+
+        [Display(Name = "Rôle")]
+        public string Role { get; set; }
+
+        public List<RoleModel> Roles { get; set; }
     }
 }
