@@ -17,7 +17,7 @@ namespace GTI619_Lab5.Controllers
     public class AccountController : Controller
     {
         public AccountController()
-            : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+            : this(new MyUserManager(new UserStore<ApplicationUser>(new ApplicationDbContext())))
         {
         }
 
@@ -26,6 +26,16 @@ namespace GTI619_Lab5.Controllers
             UserManager = userManager;
             _roleContext = new ApplicationDbContext();
             _context = new ApplicationContext();
+
+
+            var passConf = _context.AuthentificationConfigs.First();
+
+            ((MyUserManager)userManager).PasswordValidator = new MyUserManager.MyPasswordValidator(passConf.MaxLenght, 
+                passConf.MinLenght, 
+                passConf.IsSpecialCase, 
+                passConf.IsNumber, 
+                passConf.IsUpperCase, 
+                passConf.IsLowerCase);
         }
 
         public UserManager<ApplicationUser> UserManager { get; private set; }
@@ -228,6 +238,14 @@ namespace GTI619_Lab5.Controllers
                     AddErrors(result);
                 }
             }
+
+            model.Roles = _roleContext.Roles.Where(w => w.Name != "Administrateur")
+                                                        .Select(s => new RoleModel()
+                                                        {
+                                                            Value = s.Id,
+                                                            Text = s.Name
+                                                        })
+                                                        .ToList();
 
             // Si nous sommes arrivés là, un échec s’est produit. Réafficher le formulaire
             return View(model);

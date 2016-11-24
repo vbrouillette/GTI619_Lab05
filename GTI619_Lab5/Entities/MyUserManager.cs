@@ -12,12 +12,12 @@ namespace GTI619_Lab5.Entities
     {
 
 
-        public MyUserManager(IUserStore<ApplicationUser> store, IIdentityValidator<string> identity)
+        public MyUserManager(IUserStore<ApplicationUser> store)
             : base(store)
         {
         }
 
-        private class MyPasswordValidator : IIdentityValidator<string>
+        public class MyPasswordValidator : IIdentityValidator<string>
         {
             private int _maxLenght;
             private int _minLenght;
@@ -43,7 +43,23 @@ namespace GTI619_Lab5.Entities
 
             public Task<IdentityResult> ValidateAsync(string password)
             {
-                //TODO
+
+                if (_minLenght > password.Length || password.Length > _maxLenght) return Task.FromResult(
+                    IdentityResult.Failed("Invalid password length. It must be between "+ _minLenght+" and "+_maxLenght+" characters"));
+
+                if (_specialChar && new System.Text.RegularExpressions.Regex("[^\\w]+").IsMatch(password) == false) return Task.FromResult(
+                    IdentityResult.Failed("Invalid password. It must contain special chars."));
+
+                if (_digit && new System.Text.RegularExpressions.Regex("[\\d]+").IsMatch(password) == false) return Task.FromResult(
+                    IdentityResult.Failed("Invalid password. It must contain digits."));
+
+                if (_upperLetter && new System.Text.RegularExpressions.Regex("[A-Z]+").IsMatch(password) == false) return Task.FromResult(
+                    IdentityResult.Failed("Invalid password. It must contain uppercase letters."));
+
+                if (_lowerLetter && new System.Text.RegularExpressions.Regex("[a-z]+").IsMatch(password) == false) return Task.FromResult(
+                    IdentityResult.Failed("Invalid password. It must contain lower case letters."));
+
+
                 return Task.FromResult(IdentityResult.Success);
             }
 

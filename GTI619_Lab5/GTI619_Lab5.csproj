@@ -180,9 +180,10 @@
     <Compile Include="Migrations\201611172018549_test.Designer.cs">
       <DependentUpon>201611172018549_test.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201611242017472_updateConfig.cs" />
-    <Compile Include="Migrations\201611242017472_updateConfig.Designer.cs">
-      <DependentUpon>201611242017472_updateConfig.cs</DependentUpon>
+    <Compile Include="Migrations\201611242017472_updateConfig.Designer.cs" />
+    <Compile Include="Migrations\201611242137137_kekekeke.cs" />
+    <Compile Include="Migrations\201611242137137_kekekeke.Designer.cs">
+      <DependentUpon>201611242137137_kekekeke.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -214,6 +215,7 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\SQL\1-AuthentificationConfig.sql" />
     <Content Include="Scripts\SQL\2 - Roles.sql" />
+    <Content Include="Scripts\SQL\3 - Configs.sql" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -261,8 +263,9 @@
     <EmbeddedResource Include="Migrations\201611172018549_test.resx">
       <DependentUpon>201611172018549_test.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201611242017472_updateConfig.resx">
-      <DependentUpon>201611242017472_updateConfig.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201611242017472_updateConfig.resx" />
+    <EmbeddedResource Include="Migrations\201611242137137_kekekeke.resx">
+      <DependentUpon>201611242137137_kekekeke.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
