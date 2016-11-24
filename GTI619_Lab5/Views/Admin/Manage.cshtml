@@ -51,6 +51,9 @@
                 <div>
                     @Html.LabelFor(m => m.TimeOutSession)
                 </div>
+                <div>
+                    @Html.LabelFor(m => m.Password)
+                </div>
                 <input type="submit" value="Soumettre" />
             </div>
 
@@ -96,6 +99,10 @@
                 </div>
                 <div>
                     @Html.TextBoxFor(m => m.TimeOutSession, new { @type = "number" })
+                </div>
+                <div>
+                    @Html.PasswordFor(m => m.Password)
+                    @Html.ValidationMessageFor(model => model.Password, "test", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
