@@ -19,6 +19,8 @@ namespace GTI619_Lab5.DAL
 
         public DbSet<LoginConfig> LoginConfigs { get; set; }
 
+        public DbSet<UserLoginLog> UserLoginLogs { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AuthentificationConfig>()
@@ -28,6 +30,10 @@ namespace GTI619_Lab5.DAL
             modelBuilder.Entity<LoginConfig>()
             .ToTable("LoginConfig")
             .HasKey(s => s.Id);
+
+            modelBuilder.Entity<UserLoginLog>()
+            .ToTable("UserLoginLog")
+            .HasKey(s => s.id);
         }
     }
 }

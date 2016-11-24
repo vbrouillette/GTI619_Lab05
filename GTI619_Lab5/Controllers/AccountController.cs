@@ -9,6 +9,7 @@ using GTI619_Lab5.Models;
 using GTI619_Lab5.DAL;
 using System.Linq;
 using System;
+using GTI619_Lab5.Entities;
 
 namespace GTI619_Lab5.Controllers
 {
@@ -54,7 +55,7 @@ namespace GTI619_Lab5.Controllers
 
                 if (userByUsername == null)
                 {
-                    ModelState.AddModelError("", "Invalid username or password.");
+                    ModelState.AddModelError("", "Invalid username.");
                 }
                 else
                 {
@@ -63,6 +64,15 @@ namespace GTI619_Lab5.Controllers
 
                     if (false)//(failedAttemptsSinceLastSuccess % loginConfig.NbAttemptsBeforeBlocking == 0) // user is blocked
                     {
+                        else
+                        {
+                            failedAttemptsSinceLastSuccess = _context.UserLoginLogs.Where(w => w.userId == userByUsername.Id && w.loginTime > lastSucessfulAttempt.loginTime).Count();
+                        }
+                    }
+
+                    if (failedAttemptsSinceLastSuccess > 0 &&
+                        failedAttemptsSinceLastSuccess % loginConfig.NbAttemptsBeforeBlocking == 0) // user is blocked
+                    {
                         var nbTimesUserHasBeenBlocked = (int)(failedAttemptsSinceLastSuccess / loginConfig.NbAttemptsBeforeBlocking) - 1;
 
                         if (nbTimesUserHasBeenBlocked >= loginConfig.MaxBlocksBeforeAdmin)
@@ -70,6 +80,8 @@ namespace GTI619_Lab5.Controllers
                             ModelState.AddModelError("", "You have been permanently blocked. Contact Admin");
                             return View(model);
                         }
+
+                        DateTime timeOfLastfailedAttempts = lastFailedAttempt.loginTime;
 
                         var currentBlockingDelay = TimeSpan.FromMinutes(
                             Int32.Parse(loginConfig.DelayBetweenBlocks.Split(',')[nbTimesUserHasBeenBlocked]));
@@ -92,7 +104,15 @@ namespace GTI619_Lab5.Controllers
                     {
                         await SignInAsync(user, model.RememberMe);
 
-                        // TODO : Log attempt, success
+                        // Loging successful login
+                        _context.UserLoginLogs.Add(
+                            new UserLoginLog(
+                                user.Id,
+                                DateTime.Now,
+                                true
+                            ));
+
+                        _context.SaveChanges();
 
                         return RedirectToLocal(returnUrl);
                     }
@@ -101,22 +121,49 @@ namespace GTI619_Lab5.Controllers
 
                         if (userByUsername != null)
                         {
-                            // TODO : Log attempt, failed
+                            // Loging failed login
+                            _context.UserLoginLogs.Add(
+                                new UserLoginLog(
+                                    userByUsername.Id,
+                                    DateTime.Now,
+                                    false
+                                ));
 
-                            failedAttemptsSinceLastSuccess++; // TODO : retrieve from Database
+                            _context.SaveChanges();
+
+                            if (lastFailedAttempt != null)
+                            {
+                                if (lastSucessfulAttempt == null)
+                                {
+                                    failedAttemptsSinceLastSuccess = _context.UserLoginLogs.Where(w => w.userId == userByUsername.Id).Count();
+                                }
+                                else
+                                {
+                                    failedAttemptsSinceLastSuccess = _context.UserLoginLogs.Where(w => w.userId == userByUsername.Id && w.loginTime > lastSucessfulAttempt.loginTime).Count();
+                                }
+                            }
 
                             if (failedAttemptsSinceLastSuccess >= loginConfig.NbAttemptsBeforeBlocking)
                             {
                                 var nbTimesUserHasBeenBlocked = (int)(failedAttemptsSinceLastSuccess / loginConfig.NbAttemptsBeforeBlocking) - 1;
+
+                                if (nbTimesUserHasBeenBlocked >= loginConfig.MaxBlocksBeforeAdmin)
+                                {
+                                    ModelState.AddModelError("", "You have been permanently blocked. Contact Admin");
+                                    return View(model);
+                                }
+
                                 var currentBlockingDelay = TimeSpan.FromMinutes(
                                     Int32.Parse(loginConfig.DelayBetweenBlocks.Split(',')[nbTimesUserHasBeenBlocked]));
+
+                                DateTime timeOfLastfailedAttempts = lastFailedAttempt.loginTime;
 
                                 var timeSinceLastfailedAttempts = DateTime.Now.Subtract(timeOfLastfailedAttempts);
 
                                 if (currentBlockingDelay > timeSinceLastfailedAttempts) // verify block is finished
                                 {
                                     ModelState.AddModelError("", "You have been blocked. Wait "
-                                        + currentBlockingDelay.Subtract(timeSinceLastfailedAttempts).TotalMinutes
+                                        + Math.Ceiling(currentBlockingDelay.Subtract(timeSinceLastfailedAttempts).TotalMinutes)
                                         + " minutes.");
                                     return View(model);
                                 }
