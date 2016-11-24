@@ -59,11 +59,17 @@ namespace GTI619_Lab5.Controllers
                 }
                 else
                 {
-                    var failedAttemptsSinceLastSuccess = 0; // TODO : retrieve from Database
-                    var timeOfLastfailedAttempts = DateTime.Now.Subtract(TimeSpan.FromMinutes(5.5)); // TODO : retrieve from Database
+                    var lastFailedAttempt = _context.UserLoginLogs.Where(w => w.userId == userByUsername.Id && w.success == false).OrderByDescending(w => w.loginTime).FirstOrDefault();
+                    var lastSucessfulAttempt = _context.UserLoginLogs.Where(w => w.userId == userByUsername.Id && w.success == true).OrderByDescending(w => w.loginTime).FirstOrDefault();
+                    
+                    var failedAttemptsSinceLastSuccess = 0;
 
-                    if (false)//(failedAttemptsSinceLastSuccess % loginConfig.NbAttemptsBeforeBlocking == 0) // user is blocked
+                    if (lastFailedAttempt != null)
                     {
+                        if (lastSucessfulAttempt == null)
+                        {
+                            failedAttemptsSinceLastSuccess = _context.UserLoginLogs.Where(w => w.userId == userByUsername.Id).Count();
+                        }
                         else
                         {
                             failedAttemptsSinceLastSuccess = _context.UserLoginLogs.Where(w => w.userId == userByUsername.Id && w.loginTime > lastSucessfulAttempt.loginTime).Count();
@@ -90,9 +96,9 @@ namespace GTI619_Lab5.Controllers
 
                         if (currentBlockingDelay > timeSinceLastfailedAttempts) // verify block is finished
                         {
-                            ModelState.AddModelError("", "You have been blocked. Wait "
-                                + currentBlockingDelay.Subtract(timeSinceLastfailedAttempts).TotalMinutes
-                                + " minutes.");
+                            ModelState.AddModelError("", "You have been blocked. Wait " 
+                                + Math.Ceiling(currentBlockingDelay.Subtract(timeSinceLastfailedAttempts).TotalMinutes) 
+                                + " minutes." );
                             return View(model);
                         }
                     }
