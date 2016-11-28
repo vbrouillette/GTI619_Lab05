@@ -6,7 +6,6 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using GTI619_Lab5.Models;
-using GTI619_Lab5.DAL;
 using System.Linq;
 using System;
 using GTI619_Lab5.Entities;
@@ -24,8 +23,7 @@ namespace GTI619_Lab5.Controllers
         public AccountController(UserManager<ApplicationUser> userManager)
         {
             UserManager = userManager;
-            _roleContext = new ApplicationDbContext();
-            _context = new ApplicationContext();
+            _context = new ApplicationDbContext();
 
 
             var passConf = _context.AuthentificationConfigs.First();
@@ -39,8 +37,7 @@ namespace GTI619_Lab5.Controllers
         }
 
         public UserManager<ApplicationUser> UserManager { get; private set; }
-        private ApplicationContext _context;
-        private ApplicationDbContext _roleContext;
+        private ApplicationDbContext _context;
 
         //
         // GET: /Account/Login
@@ -204,7 +201,7 @@ namespace GTI619_Lab5.Controllers
         public ActionResult Register()
         {
             var registerViewModel = new RegisterViewModel();
-            registerViewModel.Roles = _roleContext.Roles.Where(w => w.Name != "Administrateur")
+            registerViewModel.Roles = _context.Roles.Where(w => w.Name != "Administrateur")
                                                         .Select(s => new RoleModel()
                                                         {
                                                             Value = s.Id,
@@ -224,7 +221,7 @@ namespace GTI619_Lab5.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser() { UserName = model.UserName };
-                var role = _roleContext.Roles.Where(w=>w.Id == model.Role).FirstOrDefault();
+                var role = _context.Roles.Where(w=>w.Id == model.Role).FirstOrDefault();
                 if(role==null || role.Name=="Administrateur"){throw new Exception();}
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -239,7 +236,7 @@ namespace GTI619_Lab5.Controllers
                 }
             }
 
-            model.Roles = _roleContext.Roles.Where(w => w.Name != "Administrateur")
+            model.Roles = _context.Roles.Where(w => w.Name != "Administrateur")
                                                         .Select(s => new RoleModel()
                                                         {
                                                             Value = s.Id,

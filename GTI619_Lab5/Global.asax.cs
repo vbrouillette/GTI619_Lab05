@@ -1,4 +1,4 @@
-﻿using GTI619_Lab5.DAL;
+﻿using GTI619_Lab5.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace GTI619_Lab5
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        private static ApplicationContext _context;
+        private static ApplicationDbContext _context;
 
         protected void Application_Start()
         {
@@ -19,7 +19,7 @@ namespace GTI619_Lab5
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            _context = new ApplicationContext();
+            _context = new ApplicationDbContext();
         }
 
         protected void Session_OnStart(object sender, EventArgs e)

@@ -1,4 +1,5 @@
 ﻿using GTI619_Lab5.Entities;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -7,33 +8,5 @@ using System.Web;
 
 namespace GTI619_Lab5.DAL
 {
-    public class ApplicationContext : DbContext
-    {
-
-        public ApplicationContext()
-            : base("DefaultConnection")
-        {
-        }
-
-        public DbSet<AuthentificationConfig> AuthentificationConfigs { get; set; }
-
-        public DbSet<LoginConfig> LoginConfigs { get; set; }
-
-        public DbSet<UserLoginLog> UserLoginLogs { get; set; }
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<AuthentificationConfig>()
-            .ToTable("AuthentificationConfig")
-            .HasKey(s => s.Id);
-
-            modelBuilder.Entity<LoginConfig>()
-            .ToTable("LoginConfig")
-            .HasKey(s => s.Id);
-
-            modelBuilder.Entity<UserLoginLog>()
-            .ToTable("UserLoginLog")
-            .HasKey(s => s.id);
-        }
-    }
+    
 }

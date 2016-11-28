@@ -1,5 +1,4 @@
-﻿using GTI619_Lab5.DAL;
-using GTI619_Lab5.Models;
+﻿using GTI619_Lab5.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
@@ -13,12 +12,12 @@ namespace GTI619_Lab5.Controllers
     public class AdminController : Controller
     {
 
-        private ApplicationContext _context;
+        private ApplicationDbContext _context;
         public UserManager<ApplicationUser> UserManager { get; private set; }
 
         public AdminController()
         {
-            _context = new ApplicationContext();
+            _context = new ApplicationDbContext();
             UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
         }
 

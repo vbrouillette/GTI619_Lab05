@@ -7,18 +7,18 @@ namespace GTI619_Lab5.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.0.0-20911")]
-    public sealed partial class kekekeke : IMigrationMetadata
+    public sealed partial class AfterClearedEverything : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(kekekeke));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AfterClearedEverything));
         
         string IMigrationMetadata.Id
         {
-            get { return "201611242137137_kekekeke"; }
+            get { return "201611282029597_After Cleared Everything"; }
         }
         
         string IMigrationMetadata.Source
         {
-            get { return Resources.GetString("Source"); }
+            get { return null; }
         }
         
         string IMigrationMetadata.Target

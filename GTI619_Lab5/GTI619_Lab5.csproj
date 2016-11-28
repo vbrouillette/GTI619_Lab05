@@ -172,18 +172,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201611171911540_InitialCreate.cs" />
-    <Compile Include="Migrations\201611171911540_InitialCreate.Designer.cs">
-      <DependentUpon>201611171911540_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201611172018549_test.cs" />
-    <Compile Include="Migrations\201611172018549_test.Designer.cs">
-      <DependentUpon>201611172018549_test.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201611242017472_updateConfig.Designer.cs" />
-    <Compile Include="Migrations\201611242137137_kekekeke.cs" />
-    <Compile Include="Migrations\201611242137137_kekekeke.Designer.cs">
-      <DependentUpon>201611242137137_kekekeke.cs</DependentUpon>
+    <Compile Include="Migrations\201611282029597_After Cleared Everything.cs" />
+    <Compile Include="Migrations\201611282029597_After Cleared Everything.Designer.cs">
+      <DependentUpon>201611282029597_After Cleared Everything.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -213,7 +204,7 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Scripts\SQL\1-AuthentificationConfig.sql" />
+    <Content Include="Scripts\SQL\1-DropErrthing.sql" />
     <Content Include="Scripts\SQL\2 - Roles.sql" />
     <Content Include="Scripts\SQL\3 - Configs.sql" />
     <Content Include="Scripts\_references.js" />
@@ -257,15 +248,8 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201611171911540_InitialCreate.resx">
-      <DependentUpon>201611171911540_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201611172018549_test.resx">
-      <DependentUpon>201611172018549_test.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201611242017472_updateConfig.resx" />
-    <EmbeddedResource Include="Migrations\201611242137137_kekekeke.resx">
-      <DependentUpon>201611242137137_kekekeke.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201611282029597_After Cleared Everything.resx">
+      <DependentUpon>201611282029597_After Cleared Everything.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
