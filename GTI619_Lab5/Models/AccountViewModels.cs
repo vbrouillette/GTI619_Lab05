@@ -60,9 +60,20 @@ namespace GTI619_Lab5.Models
         [Compare("Password", ErrorMessage = "Le mot de passe et le mot de passe de confirmation ne correspondent pas.")]
         public string ConfirmPassword { get; set; }
 
+        [Required]
+        [Display(Name = "Numéro de téléphone")]
+        public string PhoneNumber { get; set; }
+
         [Display(Name = "Rôle")]
         public string Role { get; set; }
 
         public List<RoleModel> Roles { get; set; }
+    }
+
+    public class ValidatePhoneNumberModel
+    {
+        [Required]
+        [Display(Name = "Entrez le code envoyé sur votre téléphone.")]
+        public string NumberProvidedByUser { get; set; }
     }
 }

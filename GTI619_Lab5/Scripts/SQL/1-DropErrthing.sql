@@ -7,3 +7,4 @@ DROP TABLE AspNetUsers;
 DROP TABLE AuthentificationConfig;
 DROP TABLE LoginConfig;
 DROP TABLE UserLoginLog;
+DROP TABLE PasswordStore;

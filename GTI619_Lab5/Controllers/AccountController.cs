@@ -9,6 +9,7 @@ using GTI619_Lab5.Models;
 using System.Linq;
 using System;
 using GTI619_Lab5.Entities;
+using Twilio;
 
 namespace GTI619_Lab5.Controllers
 {
@@ -16,13 +17,13 @@ namespace GTI619_Lab5.Controllers
     public class AccountController : Controller
     {
 
-        public UserManager<ApplicationUser> UserManager { get; private set; }
-        private ApplicationDbContext _context;
+        public UserManager<ApplicationUser> UserManager { get; set; }
+        public ApplicationDbContext _context;
 
         public AccountController()
         {
             _context = new ApplicationDbContext();
-            UserManager = new MyUserManager(new UserStore<ApplicationUser>(_context));
+            this.UserManager = new MyUserManager(new UserStore<ApplicationUser>(_context));
 
             var passConf = _context.AuthentificationConfigs.First();
 
@@ -31,8 +32,52 @@ namespace GTI619_Lab5.Controllers
                 passConf.IsSpecialCase, 
                 passConf.IsNumber, 
                 passConf.IsUpperCase, 
-                passConf.IsLowerCase);
-            
+                passConf.IsLowerCase);            
+        }
+
+        //
+        // GET: /Account/ValidatePhone
+        [RequireHttps]
+        [AllowInvalidUserPhone]
+        [AllowNeedNewPass]
+        public ActionResult ValidatePhone(string returnUrl)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = UserManager.FindById(User.Identity.GetUserId());
+
+                string AccountSid = "AC2dd21d169a7f2e213b6b7e3ceae39e39";
+                string AuthToken = "555accad379bd409996b3f984930c87c";
+                var twilio = new TwilioRestClient(AccountSid, AuthToken);
+
+                Session["phoneCode"] = (new Random()).Next(100000, 999999).ToString();
+
+                twilio.SendMessage("4387949821", user.PhoneNumber, (String)Session["phoneCode"]);
+
+                ViewBag.ReturnUrl = returnUrl;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", new { returnUrl = returnUrl, message = "Something went wrong." });
+            }
+        }
+
+        //
+        // POST: /Account/ValidatePhone
+        [HttpPost]
+        [RequireHttps]
+        [AllowInvalidUserPhone]
+        [AllowNeedNewPass]
+        public ActionResult ValidatePhone(ValidatePhoneNumberModel model, string returnUrl)
+        {
+            var user = UserManager.FindById(User.Identity.GetUserId());
+
+            user.Validated = model.NumberProvidedByUser == (String)Session["phoneCode"];
+            UserManager.Update(user);
+            _context.SaveChanges();
+
+            return RedirectToLocal(returnUrl);
         }
 
         //
@@ -52,7 +97,7 @@ namespace GTI619_Lab5.Controllers
         [RequireHttps]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -123,6 +168,9 @@ namespace GTI619_Lab5.Controllers
                                 DateTime.Now,
                                 true
                             ));
+
+                        user.Validated = false;
+                        UserManager.Update(user);
 
                         _context.SaveChanges();
 
@@ -231,6 +279,10 @@ namespace GTI619_Lab5.Controllers
                                     user.PasswordHash,
                                     DateTime.Now
                                 ));
+
+                    user.Validated = false;
+                    user.PhoneNumber = model.PhoneNumber;
+                    UserManager.Update(user);
 
                     _context.SaveChanges();
 
@@ -351,7 +403,10 @@ namespace GTI619_Lab5.Controllers
                                         DateTime.Now
                                     ));
 
-                            _context.SaveChanges();
+                        var user = UserManager.FindById(User.Identity.GetUserId());
+                        user.Validated = false;
+                        UserManager.Update(user);
+                        _context.SaveChanges();
 
                             return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
                         }
@@ -505,6 +560,7 @@ namespace GTI619_Lab5.Controllers
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowInvalidUserPhone]
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();
@@ -532,7 +588,6 @@ namespace GTI619_Lab5.Controllers
             if (disposing && UserManager != null)
             {
                 UserManager.Dispose();
-                UserManager = null;
             }
             base.Dispose(disposing);
         }

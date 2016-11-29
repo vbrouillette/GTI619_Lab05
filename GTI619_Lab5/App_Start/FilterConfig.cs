@@ -15,12 +15,12 @@ namespace GTI619_Lab5
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             var context = new ApplicationDbContext();
-            var userManager = new MyUserManager(new UserStore<ApplicationUser>(context));
 
             filters.Add(new HandleErrorAttribute());
             filters.Add(new RedirectOnSessionTimeOut());
-            filters.Add(new ValidatePasswordChangeNeeded(context, userManager));
-            filters.Add(new RedirectOnNeedNewPass(userManager));
+            filters.Add(new ValidateUserPhone(context));
+            filters.Add(new ValidatePasswordChangeNeeded(context));
+            filters.Add(new RedirectOnNeedNewPass(context));
         }
     }
 
@@ -54,24 +54,60 @@ namespace GTI619_Lab5
         }
     }
 
+    public class AllowInvalidUserPhone : ActionFilterAttribute { } // Use to skip follwing filter
+    public class ValidateUserPhone : ActionFilterAttribute
+    {
+        public ApplicationDbContext context { get; private set; }
+
+        public ValidateUserPhone(ApplicationDbContext context)
+        {
+            this.context = context;
+        }
+
+        public override void OnActionExecuted(ActionExecutedContext filterContext)
+        {
+            if (!filterContext.ActionDescriptor.GetCustomAttributes(typeof(AllowInvalidUserPhone), false).Any())
+            {
+                var userId = ((Controller)filterContext.Controller).User.Identity.GetUserId();
+                if (userId != null)
+                {
+                    var u = context.Set<ApplicationUser>().AsNoTracking().Where(c => c.Id == userId).First();
+
+                    if (!u.Validated)
+                    {
+                        filterContext.Result = new RedirectToRouteResult(new System.Web.Routing.RouteValueDictionary
+                        {
+                            { "controller", "Account" },
+                            { "action", "ValidatePhone" },
+                            { "returnUrl", filterContext.HttpContext.Request.Path }
+                        });
+                    }
+                }
+            }
+
+            base.OnActionExecuted(filterContext);
+        }
+    }
+
     public class AllowNeedNewPass : ActionFilterAttribute { } // Use to skip follwing filter
     public class RedirectOnNeedNewPass : ActionFilterAttribute
     {
-        public UserManager<ApplicationUser> UserManager { get; private set; }
+        public ApplicationDbContext context { get; private set; }
 
-        public RedirectOnNeedNewPass(UserManager<ApplicationUser> userManager)
+        public RedirectOnNeedNewPass(ApplicationDbContext context)
         {
-            this.UserManager = userManager;
+            this.context = context;
         }
 
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+
+        public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
             if (!filterContext.ActionDescriptor.GetCustomAttributes(typeof(AllowNeedNewPass), false).Any())
             {
                 var userId = ((Controller)filterContext.Controller).User.Identity.GetUserId();
                 if (userId != null)
                 {
-                    var u = UserManager.FindById(userId);
+                    var u = context.Set<ApplicationUser>().AsNoTracking().Where(c => c.Id == userId).First();
 
                     if (u.NeedNewPassword)
                     {
@@ -85,39 +121,46 @@ namespace GTI619_Lab5
                 }
             }
 
-            base.OnActionExecuting(filterContext);
+            base.OnActionExecuted(filterContext);
         }
     }
 
     public class ValidatePasswordChangeNeeded : ActionFilterAttribute
     {
-        private UserManager<ApplicationUser> UserManager;
         private ApplicationDbContext _context;
 
-        public ValidatePasswordChangeNeeded(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public ValidatePasswordChangeNeeded(ApplicationDbContext context)
         {
             _context = context;
-            this.UserManager = userManager;
         }
 
         public override void OnResultExecuted(ResultExecutedContext filterContext)
         {
             if (filterContext.HttpContext.User.Identity.IsAuthenticated)
             {
-                var user = UserManager.FindById(filterContext.HttpContext.User.Identity.GetUserId());
-                var config = _context.AuthentificationConfigs.First();
-                if (config.IsPeriodic && !user.NeedNewPassword)
+                var userId = ((Controller)filterContext.Controller).User.Identity.GetUserId();
+                if (userId != null)
                 {
-                    var lastPasswordChangeDate = DateTime.Now.Subtract(TimeSpan.FromMinutes(5)); // TODO Fetch from DB.
-                    var timeSinceLastChange = DateTime.Now.Subtract(lastPasswordChangeDate);
+                    var user = _context.Set<ApplicationUser>().AsNoTracking().Where(c => c.Id == userId).FirstOrDefault();
 
-                    if (timeSinceLastChange.TotalMinutes > config.PeriodPeriodic)
+                    if (user != null)
                     {
-                        user.NeedNewPassword = true;
-                        UserManager.Update(user);
-                        _context.SaveChanges();
+                        var config = _context.Set<AuthentificationConfig>().First();
+                        if (config.IsPeriodic && !user.NeedNewPassword)
+                        {
+                            var lastPasswordChangeDate = _context.PasswordStores.OrderByDescending(c => c.creationDate).First(c => c.userId == user.Id).creationDate;
+                            var timeSinceLastChange = DateTime.Now.Subtract(lastPasswordChangeDate);
+
+                            if (timeSinceLastChange.TotalMinutes > config.PeriodPeriodic)
+                            {
+                                user.NeedNewPassword = true;
+                                _context.Entry(user).State = System.Data.Entity.EntityState.Modified;
+                                _context.SaveChanges();
+                            }
+                        }
                     }
                 }
+                
             }
 
             base.OnResultExecuted(filterContext);

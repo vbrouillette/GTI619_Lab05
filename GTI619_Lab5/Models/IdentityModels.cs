@@ -10,6 +10,8 @@ namespace GTI619_Lab5.Models
     public class ApplicationUser : IdentityUser
     {
         public bool NeedNewPassword { get; set; }
+        public string PhoneNumber { get; set; }
+        public bool Validated { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

@@ -41,6 +41,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="RestSharp, Version=105.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.2\lib\net45\RestSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -97,6 +101,10 @@
     <Reference Include="Newtonsoft.Json">
       <Private>True</Private>
       <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Twilio.Api, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Twilio.4.7.2\lib\3.5\Twilio.Api.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
@@ -177,6 +185,10 @@
     <Compile Include="Migrations\201611282029597_After Cleared Everything.Designer.cs">
       <DependentUpon>201611282029597_After Cleared Everything.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201611291807001_User.Validate.cs" />
+    <Compile Include="Migrations\201611291807001_User.Validate.Designer.cs">
+      <DependentUpon>201611291807001_User.Validate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -237,6 +249,9 @@
     <Content Include="Views\Admin\Manage.cshtml" />
     <Content Include="Views\Circle\Index.cshtml" />
     <Content Include="Views\Square\Index.cshtml" />
+    <Content Include="Views\Account\ValidatePhone.cshtml">
+      <BrowseToURL>~/Views/Account/ValidatePhone.cshtml</BrowseToURL>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -251,6 +266,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201611282029597_After Cleared Everything.resx">
       <DependentUpon>201611282029597_After Cleared Everything.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611291807001_User.Validate.resx">
+      <DependentUpon>201611291807001_User.Validate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
@@ -271,7 +289,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>51585</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:51585/</IISUrl>
+          <IISUrl>https://localhost:44300/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
