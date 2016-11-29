@@ -1,4 +1,5 @@
-﻿using GTI619_Lab5.Models;
+﻿using GTI619_Lab5.Entities;
+using GTI619_Lab5.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using static GTI619_Lab5.Controllers.AccountController;
 
 namespace GTI619_Lab5.Controllers
 {
@@ -18,14 +20,16 @@ namespace GTI619_Lab5.Controllers
         public AdminController()
         {
             _context = new ApplicationDbContext();
-            UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            UserManager = new MyUserManager(new UserStore<ApplicationUser>(_context));
         }
 
         [Authorize(Roles = "Administrateur")]
-        public ActionResult Manage()
+        public ActionResult Manage(String error = "")
         {
             var config = _context.AuthentificationConfigs.First();
             var loginConfig = _context.LoginConfigs.First();
+
+            ViewBag.Error = error;
 
             var updateConfigModel = new UpdateConfigModel()
             {
@@ -42,7 +46,7 @@ namespace GTI619_Lab5.Controllers
                 DelayBetweenBlocks = loginConfig.DelayBetweenBlocks,
                 DelayBetweenFailedAuthentication = loginConfig.DelayBetweenFailedAuthentication,
                 MaxBlocksBeforeAdmin = loginConfig.MaxBlocksBeforeAdmin,
-                NbAttemptsBeforeBlocking=loginConfig.NbAttemptsBeforeBlocking
+                NbAttemptsBeforeBlocking = loginConfig.NbAttemptsBeforeBlocking
             };
             return View(updateConfigModel);
         }
@@ -51,15 +55,16 @@ namespace GTI619_Lab5.Controllers
         [Authorize(Roles = "Administrateur")]
         public ActionResult UpdateConfig(UpdateConfigModel model)
         {
-            var user = UserManager.Find(User.Identity.Name, model.Password);
+            var user = UserManager.Find(User.Identity.Name, model.Password == null ? "" : model.Password);
+            var config = _context.AuthentificationConfigs.First();
+            var loginConfig = _context.LoginConfigs.First();
+
             if (user == null)
             {
-                //TODO : Trouver quelque de meilleur
-                throw new Exception("Le mot de passe entré ne correspond pas à votre mot de passe de compte.");
+                return RedirectToAction("Manage", new { error = "Password invalide!" });
             }
             else
             {
-                var config = _context.AuthentificationConfigs.First();
                 config.TimeOutSession = model.TimeOutSession;
                 config.IsLowerCase = model.IsLowerCase;
                 config.IsNumber = model.IsNumber;
@@ -71,7 +76,6 @@ namespace GTI619_Lab5.Controllers
                 config.PeriodPeriodic = model.PeriodPeriodic;
                 config.NbrLastPasswords = model.NbrLastPasswords;
 
-                var loginConfig = _context.LoginConfigs.First();
                 loginConfig.DelayBetweenBlocks = model.DelayBetweenBlocks;
                 loginConfig.DelayBetweenFailedAuthentication = model.DelayBetweenFailedAuthentication;
                 loginConfig.MaxBlocksBeforeAdmin = model.MaxBlocksBeforeAdmin;

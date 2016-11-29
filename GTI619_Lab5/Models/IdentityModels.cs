@@ -1,6 +1,8 @@
 ﻿using GTI619_Lab5.Entities;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity;
+using System.Web;
+using System.Web.Mvc;
 
 namespace GTI619_Lab5.Models
 {

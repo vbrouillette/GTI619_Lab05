@@ -15,36 +15,33 @@ namespace GTI619_Lab5.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+
+        public UserManager<ApplicationUser> UserManager { get; private set; }
+        private ApplicationDbContext _context;
+
         public AccountController()
-            : this(new MyUserManager(new UserStore<ApplicationUser>(new ApplicationDbContext())))
         {
-        }
-
-        public AccountController(UserManager<ApplicationUser> userManager)
-        {
-            UserManager = userManager;
             _context = new ApplicationDbContext();
-
+            UserManager = new MyUserManager(new UserStore<ApplicationUser>(_context));
 
             var passConf = _context.AuthentificationConfigs.First();
 
-            ((MyUserManager)userManager).PasswordValidator = new MyUserManager.MyPasswordValidator(passConf.MaxLenght, 
+            UserManager.PasswordValidator = new MyUserManager.MyPasswordValidator(passConf.MaxLenght, 
                 passConf.MinLenght, 
                 passConf.IsSpecialCase, 
                 passConf.IsNumber, 
                 passConf.IsUpperCase, 
                 passConf.IsLowerCase);
+            
         }
-
-        public UserManager<ApplicationUser> UserManager { get; private set; }
-        private ApplicationDbContext _context;
 
         //
         // GET: /Account/Login
         [AllowAnonymous]
-        public ActionResult Login(string returnUrl)
+        public ActionResult Login(string returnUrl, string message = "")
         {
             ViewBag.ReturnUrl = returnUrl;
+            ViewBag.Message = message;
             return View();
         }
 
@@ -53,7 +50,7 @@ namespace GTI619_Lab5.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -269,6 +266,7 @@ namespace GTI619_Lab5.Controllers
 
         //
         // GET: /Account/Manage
+        [AllowNeedNewPass]
         public ActionResult Manage(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
@@ -276,6 +274,7 @@ namespace GTI619_Lab5.Controllers
                 : message == ManageMessageId.SetPasswordSuccess ? "Votre mot de passe a été défini."
                 : message == ManageMessageId.RemoveLoginSuccess ? "La connexion externe a été supprimée."
                 : message == ManageMessageId.Error ? "Une erreur s'est produite."
+                : message == ManageMessageId.HaveToChange ? "Vous devez changer votre mot de passe!"
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
@@ -286,6 +285,7 @@ namespace GTI619_Lab5.Controllers
         // POST: /Account/Manage
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowNeedNewPass]
         public async Task<ActionResult> Manage(ManageUserViewModel model)
         {
             bool hasPassword = HasPassword();
@@ -514,7 +514,8 @@ namespace GTI619_Lab5.Controllers
             ChangePasswordSuccess,
             SetPasswordSuccess,
             RemoveLoginSuccess,
-            Error
+            Error,
+            HaveToChange
         }
 
         private ActionResult RedirectToLocal(string returnUrl)
