@@ -41,6 +41,7 @@ namespace GTI619_Lab5.Controllers
 
         //
         // GET: /Account/Login
+        [RequireHttps]
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -51,6 +52,7 @@ namespace GTI619_Lab5.Controllers
         //
         // POST: /Account/Login
         [HttpPost]
+        [RequireHttps]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
