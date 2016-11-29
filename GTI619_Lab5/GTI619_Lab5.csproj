@@ -165,6 +165,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SquareController.cs" />
     <Compile Include="DAL\ApplicationContext.cs" />
+    <Compile Include="Entities\PasswordStore.cs" />
     <Compile Include="Entities\UserLoginLog.cs" />
     <Compile Include="Entities\LoginConfig.cs" />
     <Compile Include="Entities\AuthentificationConfig.cs" />

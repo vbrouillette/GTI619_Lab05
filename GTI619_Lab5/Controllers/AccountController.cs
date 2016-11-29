@@ -226,6 +226,15 @@ namespace GTI619_Lab5.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    _context.PasswordStores.Add(
+                                new PasswordStore(
+                                    user.Id,
+                                    user.PasswordHash,
+                                    DateTime.Now
+                                ));
+
+                    _context.SaveChanges();
+
                     UserManager.AddToRole(user.Id, role.Name);
                     await SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
@@ -298,6 +307,15 @@ namespace GTI619_Lab5.Controllers
                     IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
                     if (result.Succeeded)
                     {
+                        _context.PasswordStores.Add(
+                                new PasswordStore(
+                                    User.Identity.GetUserId(),
+                                    UserManager.FindById(User.Identity.GetUserId()).PasswordHash,
+                                    DateTime.Now
+                                ));
+
+                        _context.SaveChanges();
+
                         return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
                     }
                     else
@@ -320,6 +338,15 @@ namespace GTI619_Lab5.Controllers
                     IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
                     if (result.Succeeded)
                     {
+                        _context.PasswordStores.Add(
+                                new PasswordStore(
+                                    User.Identity.GetUserId(),
+                                    UserManager.FindById(User.Identity.GetUserId()).PasswordHash,
+                                    DateTime.Now
+                                ));
+
+                        _context.SaveChanges();
+
                         return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
                     }
                     else
