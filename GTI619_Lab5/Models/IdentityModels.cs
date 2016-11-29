@@ -25,6 +25,8 @@ namespace GTI619_Lab5.Models
 
         public DbSet<UserLoginLog> UserLoginLogs { get; set; }
 
+        public DbSet<PasswordStore> PasswordStores { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -39,6 +41,10 @@ namespace GTI619_Lab5.Models
 
             modelBuilder.Entity<UserLoginLog>()
             .ToTable("UserLoginLog")
+            .HasKey(s => s.id);
+
+            modelBuilder.Entity<PasswordStore>()
+            .ToTable("PasswordStore")
             .HasKey(s => s.id);
         }
     }
