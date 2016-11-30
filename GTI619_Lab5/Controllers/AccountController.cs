@@ -306,23 +306,59 @@ namespace GTI619_Lab5.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
-                    if (result.Succeeded)
+                    
+                    var numberOfPasswordsChecked = 3;   // configurable 
+                    var userId = User.Identity.GetUserId();
+                    bool passwordAlreadyExists = false;
+
+                    var oldPasswordList = _context.PasswordStores
+                    .Where(w => w.userId == userId)
+                    .OrderBy(x => x.creationDate)
+                    .Take(numberOfPasswordsChecked).Any();
+
+                    if (oldPasswordList)
                     {
-                        _context.PasswordStores.Add(
-                                new PasswordStore(
-                                    User.Identity.GetUserId(),
-                                    UserManager.FindById(User.Identity.GetUserId()).PasswordHash,
-                                    DateTime.Now
-                                ));
+                        var oldPasswords = _context.PasswordStores
+                            .Where(w => w.userId == userId)
+                            .OrderBy(x => x.creationDate)
+                            .Take(numberOfPasswordsChecked);
 
-                        _context.SaveChanges();
+                        foreach (var oldPass in oldPasswords)
+                        {
+                            var resultCheck = new PasswordHasher().VerifyHashedPassword(oldPass.passwordHash, model.NewPassword);
+                            if (resultCheck == PasswordVerificationResult.Success)
+                            {
+                                passwordAlreadyExists = true;
+                            }
 
-                        return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
+                        }
+                    }
+
+                    if (passwordAlreadyExists)
+                    {
+                        ModelState.AddModelError("", "Password already registered");
+                        return View(model);
                     }
                     else
                     {
-                        AddErrors(result);
+                        IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+                        if (result.Succeeded)
+                        {
+                            _context.PasswordStores.Add(
+                                    new PasswordStore(
+                                        User.Identity.GetUserId(),
+                                        UserManager.FindById(User.Identity.GetUserId()).PasswordHash,
+                                        DateTime.Now
+                                    ));
+
+                            _context.SaveChanges();
+
+                            return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
+                        }
+                        else
+                        {
+                            AddErrors(result);
+                        }
                     }
                 }
             }
