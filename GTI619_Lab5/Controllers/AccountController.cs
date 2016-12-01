@@ -203,7 +203,8 @@ namespace GTI619_Lab5.Controllers
                                 }
                             }
 
-                            if (failedAttemptsSinceLastSuccess >= loginConfig.NbAttemptsBeforeBlocking)
+                            if (failedAttemptsSinceLastSuccess > 0 &&
+                                failedAttemptsSinceLastSuccess % loginConfig.NbAttemptsBeforeBlocking == 0)
                             {
                                 var nbTimesUserHasBeenBlocked = (int)(failedAttemptsSinceLastSuccess / loginConfig.NbAttemptsBeforeBlocking) - 1;
 
@@ -362,26 +363,17 @@ namespace GTI619_Lab5.Controllers
                     var userId = User.Identity.GetUserId();
                     bool passwordAlreadyExists = false;
 
-                    var oldPasswordList = _context.PasswordStores
-                    .Where(w => w.userId == userId)
-                    .OrderByDescending(x => x.creationDate)
-                    .Take(numberOfPasswordsChecked).Any();
+                    var oldPasswords = _context.PasswordStores
+                        .Where(w => w.userId == userId)
+                        .OrderByDescending(x => x.creationDate)
+                        .Take(numberOfPasswordsChecked);
 
-                    if (oldPasswordList)
+                    foreach (var oldPass in oldPasswords)
                     {
-                        var oldPasswords = _context.PasswordStores
-                            .Where(w => w.userId == userId)
-                            .OrderBy(x => x.creationDate)
-                            .Take(numberOfPasswordsChecked);
-
-                        foreach (var oldPass in oldPasswords)
+                        var resultCheck = new PasswordHasher().VerifyHashedPassword(oldPass.passwordHash, model.NewPassword);
+                        if (resultCheck == PasswordVerificationResult.Success)
                         {
-                            var resultCheck = new PasswordHasher().VerifyHashedPassword(oldPass.passwordHash, model.NewPassword);
-                            if (resultCheck == PasswordVerificationResult.Success)
-                            {
-                                passwordAlreadyExists = true;
-                            }
-
+                            passwordAlreadyExists = true;
                         }
                     }
 

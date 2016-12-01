@@ -218,16 +218,8 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\SQL\1-DropErrthing.sql" />
-    <Content Include="Scripts\SQL\2 - Roles.sql" />
-    <Content Include="Scripts\SQL\3 - Configs.sql" />
+    <Content Include="Scripts\SQL\2 - Roles + config.sql" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
@@ -252,6 +244,20 @@
     <Content Include="Views\Account\ValidatePhone.cshtml">
       <BrowseToURL>~/Views/Account/ValidatePhone.cshtml</BrowseToURL>
     </Content>
+    <None Include="Web.config.VS2015" />
+    <None Include="Web.config.Debug.VS2015">
+      <DependentUpon>Web.config.VS2015</DependentUpon>
+    </None>
+    <None Include="Web.config.Release.VS2015">
+      <DependentUpon>Web.config.VS2015</DependentUpon>
+    </None>
+    <None Include="Web.config.VS2013" />
+    <None Include="Web.config.Debug.VS2013">
+      <DependentUpon>Web.config.VS2013</DependentUpon>
+    </None>
+    <None Include="Web.config.Release.VS2013">
+      <DependentUpon>Web.config.VS2013</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
