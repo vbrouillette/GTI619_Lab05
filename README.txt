@@ -23,3 +23,12 @@ De retour à la fenêtre d'exécution de requête dans la base de données; Effa
 Voilà, vous êtes maintenant près à démarrer le logiciel avec F5 ou le bouton dans le haut de l'IDE. Cette commande devrait
 ouvrir une fenêtre dans votre furteur par défaut à l'adresse https://localhost:44300/
 
+**************************
+Les informations d'authentification de l'administrateur sont : 
+u: Administrateur
+p: Administrateur123!
+
+**************************
+Avec les configurations par défaut, l'authentification forte est désactivée. Si vous l'activez, vous ne receverez pas les
+texto de validation car le service qu'on utilise nécessite qu'on enregistre le numéro de téléphone a priori. Si vous voulez,
+vous pouvez m'envoyer votre # de téléphone (simoncorcos.ing@gmail.com) et je l'enregisterai aussi tôt.
