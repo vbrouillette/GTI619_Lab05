@@ -55,6 +55,10 @@ namespace GTI619_Lab5.Models
         public int TimeOutSession { get; set; }
 
         [Required]
+        [Display(Name = "Authentification forte?")]
+        public bool StrongAuthentication { get; set; }
+
+        [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Mot de passe :")]
         public string Password { get; set; }

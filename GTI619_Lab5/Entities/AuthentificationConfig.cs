@@ -12,6 +12,7 @@ namespace GTI619_Lab5.Entities
         public bool IsPeriodic { get; set; }
         public int PeriodPeriodic { get; set; } // Période avant de devoir modifier le password
         public int NbrLastPasswords { get; set; }
+        public bool StrongAuthentication { get; set; }
 
         public int MaxLenght { get; set; }
         public int MinLenght { get; set; }

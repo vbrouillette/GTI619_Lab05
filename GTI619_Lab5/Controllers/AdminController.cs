@@ -46,7 +46,8 @@ namespace GTI619_Lab5.Controllers
                 DelayBetweenBlocks = loginConfig.DelayBetweenBlocks,
                 DelayBetweenFailedAuthentication = loginConfig.DelayBetweenFailedAuthentication,
                 MaxBlocksBeforeAdmin = loginConfig.MaxBlocksBeforeAdmin,
-                NbAttemptsBeforeBlocking = loginConfig.NbAttemptsBeforeBlocking
+                NbAttemptsBeforeBlocking = loginConfig.NbAttemptsBeforeBlocking,
+                StrongAuthentication = config.StrongAuthentication
             };
             return View(updateConfigModel);
         }
@@ -75,6 +76,7 @@ namespace GTI619_Lab5.Controllers
                 config.MinLenght = model.MinLenght;
                 config.PeriodPeriodic = model.PeriodPeriodic;
                 config.NbrLastPasswords = model.NbrLastPasswords;
+                config.StrongAuthentication = model.StrongAuthentication;
 
                 loginConfig.DelayBetweenBlocks = model.DelayBetweenBlocks;
                 loginConfig.DelayBetweenFailedAuthentication = model.DelayBetweenFailedAuthentication;

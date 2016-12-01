@@ -66,7 +66,9 @@ namespace GTI619_Lab5
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            if (!filterContext.ActionDescriptor.GetCustomAttributes(typeof(AllowInvalidUserPhone), false).Any())
+            var config = context.Set<AuthentificationConfig>().AsNoTracking().FirstOrDefault();
+
+            if (config.StrongAuthentication && !filterContext.ActionDescriptor.GetCustomAttributes(typeof(AllowInvalidUserPhone), false).Any())
             {
                 var userId = ((Controller)filterContext.Controller).User.Identity.GetUserId();
                 if (userId != null)

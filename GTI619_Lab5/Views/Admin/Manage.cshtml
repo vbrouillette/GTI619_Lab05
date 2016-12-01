@@ -53,6 +53,9 @@
                     @Html.LabelFor(m => m.TimeOutSession)
                 </div>
                 <div>
+                    @Html.LabelFor(m => m.StrongAuthentication)
+                </div>
+                <div>
                     @Html.LabelFor(m => m.Password)
                 </div>
                 <input type="submit" value="Soumettre" />
@@ -100,6 +103,9 @@
                 </div>
                 <div>
                     @Html.TextBoxFor(m => m.TimeOutSession, new { @type = "number" })
+                </div>
+                <div>
+                    @Html.CheckBoxFor(m => m.StrongAuthentication)
                 </div>
                 <div>
                     @Html.PasswordFor(m => m.Password)

@@ -358,14 +358,13 @@ namespace GTI619_Lab5.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    
-                    var numberOfPasswordsChecked = 3;   // configurable 
+                    var numberOfPasswordsChecked = _context.Set<AuthentificationConfig>().First().NbrLastPasswords;
                     var userId = User.Identity.GetUserId();
                     bool passwordAlreadyExists = false;
 
                     var oldPasswordList = _context.PasswordStores
                     .Where(w => w.userId == userId)
-                    .OrderBy(x => x.creationDate)
+                    .OrderByDescending(x => x.creationDate)
                     .Take(numberOfPasswordsChecked).Any();
 
                     if (oldPasswordList)
@@ -405,6 +404,7 @@ namespace GTI619_Lab5.Controllers
 
                         var user = UserManager.FindById(User.Identity.GetUserId());
                         user.Validated = false;
+                        user.NeedNewPassword = false;
                         UserManager.Update(user);
                         _context.SaveChanges();
 
